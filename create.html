@@ -2,91 +2,149 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Генератор офферов для клиентов</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>body{background:#07090E;color:#F1F5F9;font-family:sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;
+    background:#07090E;
+    color:#F1F5F9;
+    font-family:'Plus Jakarta Sans', Manrope, sans-serif;
+  }
+  .glass-card{
+    background:linear-gradient(180deg, rgba(22, 28, 42, 0.78) 0%, rgba(13, 17, 26, 0.92) 100%);
+    border:1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  }
+  .field{
+    width:100%;
+    background:rgba(0,0,0,0.45);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    padding:10px 12px;
+    color:#fff;
+    outline:none;
+    font-size:13px;
+  }
+  .field:focus{border-color:#3B82F6}
+  .accent-btn{
+    background:linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    box-shadow:0 8px 24px -4px rgba(37, 99, 235, 0.5);
+  }
+</style>
 </head>
-<body class="p-4 max-w-lg mx-auto">
-  <h1 class="text-xl font-bold mb-4 text-blue-400">⚡ Генератор ссылки под клиента</h1>
+<body class="p-4 max-w-lg mx-auto pb-16">
+  <div class="flex items-center gap-2.5 mb-5 pt-2">
+    <div class="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-base">⚡</div>
+    <div>
+      <h1 class="text-base font-extrabold text-white">Генератор клиентских ссылок</h1>
+      <p class="text-[11px] text-zinc-400">Сборка параметров для index.html и admin.html</p>
+    </div>
+  </div>
 
-  <div class="space-y-3 text-sm">
+  <div class="glass-card rounded-2xl p-4 space-y-3.5">
     <div>
-      <label class="block text-zinc-400 text-xs mb-1">Название заведения</label>
-      <input id="name" placeholder="Баня У Ручья" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white">
-    </div>
-    <div>
-      <label class="block text-zinc-400 text-xs mb-1">Категория</label>
-      <input id="cat" value="Банный клуб & SPA" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white">
-    </div>
-    <div>
-      <label class="block text-zinc-400 text-xs mb-1">Адрес</label>
-      <input id="address" placeholder="ул. Лесная, 10" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white">
-    </div>
-    <div>
-      <label class="block text-zinc-400 text-xs mb-1">Телефон владельца</label>
-      <input id="phone" placeholder="+7 (999) 000-00-00" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white">
-    </div>
-
-    <div class="grid grid-cols-2 gap-2 pt-2">
-      <div>
-        <label class="block text-zinc-400 text-xs mb-1">Услуга 1 (Название)</label>
-        <input id="s1_name" value="Русская Парная" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
-      </div>
-      <div>
-        <label class="block text-zinc-400 text-xs mb-1">Цена 1 (₽)</label>
-        <input id="s1_price" type="number" value="4500" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
-      </div>
+      <label class="block text-zinc-400 text-[11px] font-semibold mb-1">Название заведения</label>
+      <input id="name" placeholder="Например: Берлога & Пар" class="field">
     </div>
 
     <div class="grid grid-cols-2 gap-2">
       <div>
-        <label class="block text-zinc-400 text-xs mb-1">Услуга 2</label>
-        <input id="s2_name" value="Barnhouse & SPA" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+        <label class="block text-zinc-400 text-[11px] font-semibold mb-1">Категория</label>
+        <input id="cat" value="Банный клуб & SPA" class="field">
       </div>
       <div>
-        <label class="block text-zinc-400 text-xs mb-1">Цена 2 (₽)</label>
-        <input id="s2_price" type="number" value="6500" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+        <label class="block text-zinc-400 text-[11px] font-semibold mb-1">PIN для админки</label>
+        <input id="pin" value="1234" maxlength="6" class="field text-center font-bold tracking-widest">
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="block text-zinc-400 text-xs mb-1">Услуга 3</label>
-        <input id="s3_name" value="Чан у ручья" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+    <div>
+      <label class="block text-zinc-400 text-[11px] font-semibold mb-1">Адрес</label>
+      <input id="address" placeholder="ул. Лесная, 10" class="field">
+    </div>
+
+    <div>
+      <label class="block text-zinc-400 text-[11px] font-semibold mb-1">Телефон заведения</label>
+      <input id="phone" placeholder="+7 (999) 000-00-00" class="field">
+    </div>
+
+    <div class="pt-2 border-t border-white/5 space-y-2.5">
+      <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Услуги и базовые цены</div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <div class="col-span-2">
+          <input id="s1_name" value="Русская Парная" placeholder="Услуга 1" class="field">
+        </div>
+        <div>
+          <input id="s1_price" type="number" step="100" value="4500" class="field text-right font-bold">
+        </div>
       </div>
-      <div>
-        <label class="block text-zinc-400 text-xs mb-1">Цена 3 (₽)</label>
-        <input id="s3_price" type="number" value="3500" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+
+      <div class="grid grid-cols-3 gap-2">
+        <div class="col-span-2">
+          <input id="s2_name" value="Barnhouse & SPA" placeholder="Услуга 2" class="field">
+        </div>
+        <div>
+          <input id="s2_price" type="number" step="100" value="6500" class="field text-right font-bold">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <div class="col-span-2">
+          <input id="s3_name" value="Чан у ручья" placeholder="Услуга 3" class="field">
+        </div>
+        <div>
+          <input id="s3_price" type="number" step="100" value="3500" class="field text-right font-bold">
+        </div>
       </div>
     </div>
 
-    <button onclick="generate()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3.5 rounded-xl text-white mt-4">
-      Собрать оффер и ссылку
+    <button onclick="generate()" class="w-full accent-btn text-white font-bold py-3.5 rounded-xl text-xs tracking-wide uppercase mt-2">
+      Собрать витрину и админку
     </button>
   </div>
 
-  <div id="result" class="mt-6 hidden space-y-3">
-    <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
-      <div class="text-xs text-zinc-400 mb-1">Ссылка для клиента:</div>
-      <a id="clientLink" target="_blank" class="text-xs text-blue-400 break-all underline"></a>
+  <div id="result" class="mt-5 hidden space-y-3">
+    <div class="glass-card rounded-2xl p-3.5 space-y-2">
+      <div class="flex justify-between items-center text-xs">
+        <span class="text-zinc-400">1. Витрина гостя (index.html):</span>
+        <button onclick="copyText('clientLinkText')" class="text-blue-400 font-bold hover:underline">Копировать</button>
+      </div>
+      <div id="clientLinkText" class="text-[11px] text-zinc-300 break-all p-2 rounded-lg bg-black/40 border border-white/5 font-mono select-all"></div>
     </div>
 
-    <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
-      <div class="text-xs text-zinc-400 mb-1">Готовое сообщение для отправки:</div>
-      <textarea id="pitchText" rows="6" class="w-full bg-black/40 text-xs text-zinc-300 p-2 rounded-lg border border-zinc-700"></textarea>
-      <button onclick="copyPitch()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-xs py-2 rounded-lg font-bold text-white mt-2">
-        Скопировать текст
-      </button>
+    <div class="glass-card rounded-2xl p-3.5 space-y-2">
+      <div class="flex justify-between items-center text-xs">
+        <span class="text-zinc-400">2. Панель владельца (admin.html):</span>
+        <button onclick="copyText('adminLinkText')" class="text-blue-400 font-bold hover:underline">Копировать</button>
+      </div>
+      <div id="adminLinkText" class="text-[11px] text-zinc-300 break-all p-2 rounded-lg bg-black/40 border border-white/5 font-mono select-all"></div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-3.5 space-y-2">
+      <div class="flex justify-between items-center text-xs">
+        <span class="text-zinc-400">Готовый питч для WhatsApp / Telegram:</span>
+        <button onclick="copyPitch()" class="text-blue-400 font-bold hover:underline">Скопировать весь текст</button>
+      </div>
+      <textarea id="pitchText" rows="8" class="field font-sans text-xs text-zinc-300 leading-relaxed"></textarea>
     </div>
   </div>
 
   <script>
     function generate() {
+      // Автоопределение базового пути (работает и на localhost, и на GitHub Pages)
       const base = window.location.origin + window.location.pathname.replace('create.html', '');
-      const p = new URLSearchParams({
+
+      const params = new URLSearchParams({
         name: document.getElementById('name').value.trim() || 'Банный клуб',
-        cat: document.getElementById('cat').value.trim(),
+        cat: document.getElementById('cat').value.trim() || 'Банный клуб & SPA',
+        pin: document.getElementById('pin').value.trim() || '1234',
         address: document.getElementById('address').value.trim(),
         phone: document.getElementById('phone').value.trim(),
         s1_name: document.getElementById('s1_name').value.trim(),
@@ -97,32 +155,44 @@
         s3_price: document.getElementById('s3_price').value.trim(),
       });
 
-      const clientUrl = base + 'index.html?' + p.toString();
-      const adminUrl = base + 'admin.html?' + p.toString();
+      const clientUrl = base + 'index.html?' + params.toString();
+      const adminUrl = base + 'admin.html?' + params.toString();
 
-      document.getElementById('clientLink').href = clientUrl;
-      document.getElementById('clientLink').innerText = clientUrl;
+      document.getElementById('clientLinkText').innerText = clientUrl;
+      document.getElementById('adminLinkText').innerText = adminUrl;
+
+      const clientName = params.get('name');
+      const pinCode = params.get('pin');
 
       document.getElementById('pitchText').value = 
-`Здравствуйте! Нашел ваш комплекс «${p.get('name')}» на картах.
-Заметил, что у вас нет мобильного бронирования в один клик, из-за чего часть клиентов может уходить.
+`Здравствуйте! Нашел ваш комплекс «${clientName}» на картах.
+Заметил, что у вас нет быстрого мобильного бронирования в один клик, из-за чего часть гостей может уходить к конкурентам.
 
 Собрал для вас готовый рабочий прототип под ваш адрес и прайс:
-👉 Приложение: ${clientUrl}
+👉 Витрина для гостей: ${clientUrl}
 
-Там же есть панель управления для владельца (записи, цены, закрытие слотов):
-👉 Панель: ${adminUrl} (PIN: 1234)
+(Открывается на телефоне как WebApp-приложение без скачивания).
 
-Если формат нравится — отдам проект под ключ за 3 500 ₽ разово.`;
+Там же настроена закрытая панель управления для вас (заявки, редактирование цен, блокировка окон):
+👉 Панель владельца: ${adminUrl}
+Ваш PIN-код: ${pinCode}
+
+Если формат заходит — отдам готовый проект со всеми правами за 3 500 ₽ разово под ключ.`;
 
       document.getElementById('result').classList.remove('hidden');
+    }
+
+    function copyText(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text);
+      alert('Ссылка скопирована!');
     }
 
     function copyPitch() {
       const t = document.getElementById('pitchText');
       t.select();
       navigator.clipboard.writeText(t.value);
-      alert('Текст скопирован!');
+      alert('Текст сообщения скопирован!');
     }
   </script>
 </body>
