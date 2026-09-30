@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Генератор офферов для клиентов</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{background:#07090E;color:#F1F5F9;font-family:sans-serif}</style>
+</head>
+<body class="p-4 max-w-lg mx-auto">
+  <h1 class="text-xl font-bold mb-4 text-blue-400">⚡ Генератор ссылки под клиента</h1>
+
+  <div class="space-y-3 text-sm">
+    <div>
+      <label class="block text-zinc-400 text-xs mb-1">Название заведения</label>
+      <input id="name" placeholder="Баня У Ручья" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white">
+    </div>
+    <div>
+      <label class="block text-zinc-400 text-xs mb-1">Категория</label>
+      <input id="cat" value="Банный клуб & SPA" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white">
+    </div>
+    <div>
+      <label class="block text-zinc-400 text-xs mb-1">Адрес</label>
+      <input id="address" placeholder="ул. Лесная, 10" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white">
+    </div>
+    <div>
+      <label class="block text-zinc-400 text-xs mb-1">Телефон владельца</label>
+      <input id="phone" placeholder="+7 (999) 000-00-00" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white">
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 pt-2">
+      <div>
+        <label class="block text-zinc-400 text-xs mb-1">Услуга 1 (Название)</label>
+        <input id="s1_name" value="Русская Парная" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+      </div>
+      <div>
+        <label class="block text-zinc-400 text-xs mb-1">Цена 1 (₽)</label>
+        <input id="s1_price" type="number" value="4500" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="block text-zinc-400 text-xs mb-1">Услуга 2</label>
+        <input id="s2_name" value="Barnhouse & SPA" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+      </div>
+      <div>
+        <label class="block text-zinc-400 text-xs mb-1">Цена 2 (₽)</label>
+        <input id="s2_price" type="number" value="6500" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="block text-zinc-400 text-xs mb-1">Услуга 3</label>
+        <input id="s3_name" value="Чан у ручья" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+      </div>
+      <div>
+        <label class="block text-zinc-400 text-xs mb-1">Цена 3 (₽)</label>
+        <input id="s3_price" type="number" value="3500" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-2.5 text-white">
+      </div>
+    </div>
+
+    <button onclick="generate()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3.5 rounded-xl text-white mt-4">
+      Собрать оффер и ссылку
+    </button>
+  </div>
+
+  <div id="result" class="mt-6 hidden space-y-3">
+    <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
+      <div class="text-xs text-zinc-400 mb-1">Ссылка для клиента:</div>
+      <a id="clientLink" target="_blank" class="text-xs text-blue-400 break-all underline"></a>
+    </div>
+
+    <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
+      <div class="text-xs text-zinc-400 mb-1">Готовое сообщение для отправки:</div>
+      <textarea id="pitchText" rows="6" class="w-full bg-black/40 text-xs text-zinc-300 p-2 rounded-lg border border-zinc-700"></textarea>
+      <button onclick="copyPitch()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-xs py-2 rounded-lg font-bold text-white mt-2">
+        Скопировать текст
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function generate() {
+      const base = window.location.origin + window.location.pathname.replace('create.html', '');
+      const p = new URLSearchParams({
+        name: document.getElementById('name').value.trim() || 'Банный клуб',
+        cat: document.getElementById('cat').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        s1_name: document.getElementById('s1_name').value.trim(),
+        s1_price: document.getElementById('s1_price').value.trim(),
+        s2_name: document.getElementById('s2_name').value.trim(),
+        s2_price: document.getElementById('s2_price').value.trim(),
+        s3_name: document.getElementById('s3_name').value.trim(),
+        s3_price: document.getElementById('s3_price').value.trim(),
+      });
+
+      const clientUrl = base + 'index.html?' + p.toString();
+      const adminUrl = base + 'admin.html?' + p.toString();
+
+      document.getElementById('clientLink').href = clientUrl;
+      document.getElementById('clientLink').innerText = clientUrl;
+
+      document.getElementById('pitchText').value = 
+`Здравствуйте! Нашел ваш комплекс «${p.get('name')}» на картах.
+Заметил, что у вас нет мобильного бронирования в один клик, из-за чего часть клиентов может уходить.
+
+Собрал для вас готовый рабочий прототип под ваш адрес и прайс:
+👉 Приложение: ${clientUrl}
+
+Там же есть панель управления для владельца (записи, цены, закрытие слотов):
+👉 Панель: ${adminUrl} (PIN: 1234)
+
+Если формат нравится — отдам проект под ключ за 3 500 ₽ разово.`;
+
+      document.getElementById('result').classList.remove('hidden');
+    }
+
+    function copyPitch() {
+      const t = document.getElementById('pitchText');
+      t.select();
+      navigator.clipboard.writeText(t.value);
+      alert('Текст скопирован!');
+    }
+  </script>
+</body>
+</html>
