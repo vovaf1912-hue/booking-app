@@ -4,9 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#07090E">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title id="page-title">Северная Баня — Бронирование</title>
+<title id="page-title">Бронирование</title>
+
+<!-- Динамический PWA Manifest & Service Worker -->
+<link id="manifest-link" rel="manifest">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%232563EB'/><text y='68' x='50' font-size='60' text-anchor='middle'>⚡</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%232563EB'/><text y='68' x='50' font-size='60' text-anchor='middle'>⚡</text></svg>">
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +29,6 @@
   }
   ::-webkit-scrollbar{display:none}
 
-  /* Glassmorphism & Neon Glow */
   .bg-glow{
     position:fixed;
     top:0;
@@ -37,7 +43,7 @@
   }
 
   .glass-card{
-    background:linear-gradient(180deg, rgba(22, 28, 42, 0.72) 0%, rgba(13, 17, 26, 0.85) 100%);
+    background:linear-gradient(180deg, rgba(22, 28, 42, 0.78) 0%, rgba(13, 17, 26, 0.92) 100%);
     border:1px solid rgba(255, 255, 255, 0.08);
     box-shadow:0 12px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
     backdrop-filter:blur(24px);
@@ -50,7 +56,7 @@
   }
 
   .pill-nav{
-    background:rgba(13, 17, 26, 0.85);
+    background:rgba(13, 17, 26, 0.90);
     border:1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter:blur(20px);
     -webkit-backdrop-filter:blur(20px);
@@ -78,28 +84,15 @@
     border:1px solid rgba(255,255,255,.07);
     transition:background .28s ease,border-color .28s ease,box-shadow .28s ease,transform .18s cubic-bezier(.2,.8,.2,1);
   }
-
-  .addon-card:active{
-    transform:scale(.985);
-  }
-
+  .addon-card:active{transform:scale(.985)}
   .addon-card.is-active{
     background:linear-gradient(180deg,rgba(37,99,235,.16) 0%,rgba(20,28,43,.82) 100%);
     border-color:rgba(96,165,250,.58);
-    box-shadow:
-      0 0 0 1px rgba(59,130,246,.12),
-      0 10px 28px -12px rgba(37,99,235,.42),
-      inset 0 1px 0 rgba(147,197,253,.08);
+    box-shadow:0 0 0 1px rgba(59,130,246,.12),0 10px 28px -12px rgba(37,99,235,.42),inset 0 1px 0 rgba(147,197,253,.08);
   }
 
-  .addon-price{
-    color:rgba(226,232,240,.72);
-    transition:color .28s ease;
-  }
-
-  .addon-card.is-active .addon-price{
-    color:rgba(191,219,254,.95);
-  }
+  .addon-price{color:rgba(226,232,240,.72);transition:color .28s ease}
+  .addon-card.is-active .addon-price{color:rgba(191,219,254,.95)}
 
   .addon-switch{
     position:relative;
@@ -109,10 +102,8 @@
     border-radius:999px;
     background:rgba(255,255,255,.10);
     border:1px solid rgba(255,255,255,.12);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.22);
-    transition:background .28s ease,border-color .28s ease,box-shadow .28s ease;
+    transition:background .28s ease,border-color .28s ease;
   }
-
   .addon-switch::after{
     content:"";
     position:absolute;
@@ -122,24 +113,15 @@
     left:2px;
     border-radius:50%;
     background:#E5E7EB;
-    box-shadow:0 2px 5px rgba(0,0,0,.35),0 1px 1px rgba(255,255,255,.25) inset;
     transition:transform .28s cubic-bezier(.2,.8,.2,1),background .28s ease;
   }
-
   .addon-switch.is-on{
     background:#2563EB;
     border-color:rgba(96,165,250,.65);
-    box-shadow:0 0 16px rgba(37,99,235,.28),inset 0 1px 0 rgba(255,255,255,.18);
   }
-
   .addon-switch.is-on::after{
     transform:translateX(18px);
     background:#fff;
-  }
-
-  .addon-card:focus-visible{
-    outline:2px solid rgba(96,165,250,.85);
-    outline-offset:2px;
   }
 
   .drag-scroll{
@@ -148,21 +130,17 @@
     -webkit-user-select:none;
     scrollbar-width:none;
   }
-
-  .drag-scroll.dragging{
-    cursor:grabbing;
-    scroll-behavior:auto !important;
-  }
-
-  .drag-scroll img{
-    -webkit-user-drag:none;
-    user-select:none;
-    pointer-events:none;
-  }
+  .drag-scroll.dragging{cursor:grabbing;scroll-behavior:auto !important}
+  .drag-scroll img{-webkit-user-drag:none;pointer-events:none}
 
   .price-animate{
     font-variant-numeric:tabular-nums;
     font-feature-settings:"tnum";
+  }
+
+  /* Safe Area Padding for mobile bottom dock */
+  .pb-dock{
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 16px));
   }
 
   @keyframes fadeIn{
@@ -193,7 +171,7 @@ const CONFIG = {
       capacity: 6,
       badge: "Традиции",
       desc: "Ароматная парная на дровах с мягким паром, вениками и зоной сеновала.",
-      photo: "https://images.unsplash.com/photo-1741601273123-ad0d8f2f63d7?auto=format&fit=crop&w=900&q=85"
+      photo: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80"
     },
     {
       id: "barn",
@@ -203,7 +181,7 @@ const CONFIG = {
       capacity: 8,
       badge: "Премиум",
       desc: "Дизайнерский дом с витражными окнами, террасой и просторной гостиной.",
-      photo: "https://images.unsplash.com/photo-1782226796423-8d72656a332c?auto=format&fit=crop&w=900&q=85"
+      photo: "https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80"
     },
     {
       id: "tub",
@@ -213,7 +191,7 @@ const CONFIG = {
       capacity: 4,
       badge: "Под открытым небом",
       desc: "Купель с теплой водой под звездным небом прямо на берегу ручья.",
-      photo: "https://images.unsplash.com/photo-1708630283392-678476d547f8?auto=format&fit=crop&w=900&q=85"
+      photo: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80"
     }
   ],
   slots: [
@@ -230,6 +208,51 @@ const CONFIG = {
 };
 
 document.getElementById("page-title").textContent = CONFIG.name + " — Бронирование";
+
+// Генерация WebApp Manifest на лету для Android PWA Install
+(function setupPwaManifest() {
+  const iconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%232563EB'/><text y='350' x='256' font-size='300' text-anchor='middle'>⚡</text></svg>`;
+  const iconUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(iconSvg);
+  
+  const manifest = {
+    name: CONFIG.name,
+    short_name: CONFIG.name,
+    description: CONFIG.category + " — онлайн бронирование",
+    start_url: window.location.href,
+    display: "standalone",
+    background_color: "#07090E",
+    theme_color: "#07090E",
+    icons: [
+      { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+      { src: iconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+    ]
+  };
+
+  const stringManifest = JSON.stringify(manifest);
+  const blob = new Blob([stringManifest], { type: 'application/json' });
+  document.getElementById('manifest-link').setAttribute('href', URL.createObjectURL(blob));
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+})();
+
+// Перехват системного события установки PWA в Chrome
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+function triggerInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+  } else {
+    S.tab = 'pwa';
+    render();
+  }
+}
 
 const DB = {
   get bookings(){ return JSON.parse(localStorage.getItem("bookings")||"[]"); },
@@ -270,7 +293,7 @@ let S = {
   addons: [],
   modal: false,
   ticket: null,
-  installPlatform: "ios"
+  installPlatform: "android"
 };
 
 function isSlotBusy(d, sId) {
@@ -289,8 +312,7 @@ function calculateTotal() {
 function render() {
   const app = $("app");
   app.innerHTML = `
-    <main class="max-w-[440px] mx-auto min-h-screen px-4 pb-32 pt-3 fade-in">
-      <!-- Status Bar Area Mockup -->
+    <main class="max-w-[440px] mx-auto min-h-screen px-4 pb-dock pt-3 fade-in">
       <header class="flex items-center justify-between py-2 mb-3">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-black text-sm tracking-tighter">
@@ -305,8 +327,8 @@ function render() {
           </div>
         </div>
 
-        <button onclick="S.tab='pwa';render()" class="tap-bounce glass-subcard rounded-full px-3 py-1.5 flex items-center gap-1.5 text-xs text-zinc-300 border border-white/10 hover:border-blue-500/40">
-          <span class="text-blue-400 text-xs">📱</span> В телефон
+        <button onclick="triggerInstall()" class="tap-bounce glass-subcard rounded-full px-3 py-1.5 flex items-center gap-1.5 text-xs text-zinc-300 border border-white/10 hover:border-blue-500/40">
+          <span class="text-blue-400 text-xs">📱</span> Установить
         </button>
       </header>
 
@@ -316,7 +338,7 @@ function render() {
       ${S.tab === "pwa" ? renderPwaBanner() : ""}
 
       <!-- Bottom Dock Bar -->
-      <nav class="fixed bottom-4 left-0 right-0 z-40 px-4">
+      <nav class="fixed bottom-3 left-0 right-0 z-40 px-4 pb-[env(safe-area-inset-bottom,0px)]">
         <div class="max-w-[400px] mx-auto pill-nav rounded-2xl p-1.5 shadow-2xl flex items-center justify-between">
           ${[
             ["book", "Запись", `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`],
@@ -352,7 +374,6 @@ function renderBooking() {
 
   return `
     <div class="space-y-6 fade-in">
-      <!-- Section: Service Picker -->
       <section>
         <div class="flex items-baseline justify-between mb-3">
           <h2 class="text-base font-bold tracking-tight text-white">1. Выберите пространство</h2>
@@ -393,7 +414,6 @@ function renderBooking() {
         </div>
       </section>
 
-      <!-- Section: Date -->
       <section>
         <div class="flex items-baseline justify-between mb-3">
           <h2 class="text-base font-bold tracking-tight text-white">2. Дата посещения</h2>
@@ -424,7 +444,6 @@ function renderBooking() {
         </div>
       </section>
 
-      <!-- Section: Slots -->
       <section>
         <div class="flex items-baseline justify-between mb-3">
           <h2 class="text-base font-bold tracking-tight text-white">3. Время сеанса</h2>
@@ -460,7 +479,6 @@ function renderBooking() {
         </div>
       </section>
 
-      <!-- Section: Addons -->
       <section>
         <div class="flex items-baseline justify-between mb-3">
           <h2 class="text-base font-bold tracking-tight text-white">4. Дополнительные ритуалы</h2>
@@ -505,8 +523,8 @@ function renderBooking() {
         </div>
       </section>
 
-      <!-- Floating Summary Card -->
-      <div class="glass-card rounded-3xl p-4 sticky bottom-24 shadow-2xl border border-blue-500/20">
+      <!-- Sticky Total Card -->
+      <div class="glass-card rounded-3xl p-4 sticky bottom-[76px] z-30 shadow-2xl border border-blue-500/20">
         <div class="flex items-center justify-between">
           <div>
             <div class="text-[11px] text-zinc-400 uppercase font-semibold">Итого к оплате</div>
@@ -525,15 +543,15 @@ function renderBooking() {
 
 function renderPwaBanner() {
   const steps = {
+    android: [
+      { num: "01", text: "Нажмите кнопку <b>«Установить»</b> вверху страницы или откройте меню Chrome (3 точки)." },
+      { num: "02", text: "Выберите пункт <b>«Установить приложение»</b>." },
+      { num: "03", text: "Подтвердите установку. Приложение добавится на рабочий стол без рамки браузера." }
+    ],
     ios: [
       { num: "01", text: "Нажмите кнопку <b>«Поделиться»</b> (квадрат со стрелкой вверх) в нижней панели Safari." },
       { num: "02", text: "Прокрутите вниз и выберите <b>«На экран «Домой»</b>." },
-      { num: "03", text: "Нажмите <b>«Добавить»</b> в верхнем правом углу. Иконка появится на рабочем столе." }
-    ],
-    android: [
-      { num: "01", text: "Нажмите на <b>меню из трех точек</b> в правом верхнем углу браузера Chrome." },
-      { num: "02", text: "Выберите пункт <b>«Установить приложение»</b> или «Добавить на гл. экран»." },
-      { num: "03", text: "Подтвердите установку в появившемся окне." }
+      { num: "03", text: "Нажмите <b>«Добавить»</b> в верхнем правом углу." }
     ],
     pc: [
       { num: "01", text: "Нажмите на <b>значок установки</b> в правой части адресной строки браузера." },
@@ -545,7 +563,6 @@ function renderPwaBanner() {
     <div class="space-y-6 fade-in pb-6">
       <div class="relative overflow-hidden rounded-3xl glass-card p-6 border border-blue-500/20">
         <div class="absolute -right-8 -top-8 w-44 h-44 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
-        
         <div class="flex items-center gap-3 mb-4">
           <div class="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-400/30 flex items-center justify-center text-blue-400 text-xl font-bold shadow-lg shadow-blue-500/10">
             ⚡
@@ -560,26 +577,24 @@ function renderPwaBanner() {
           Добавьте клуб<br>на главный экран
         </h1>
         <p class="text-xs text-zinc-400 mt-2 leading-relaxed">
-          Быстрый доступ к датам, просмотр своих броней без авторизации и моментальные напоминания о сеансах.
+          Мгновенный доступ, работа без интернета и просмотр своего активного электронного билета.
         </p>
 
-        <div class="mt-4 flex items-center gap-2 text-xs text-blue-300 bg-blue-950/40 border border-blue-800/40 rounded-xl px-3.5 py-2">
-          <span>📲</span> <span>Работает без скачивания из App Store / Google Play</span>
-        </div>
+        <button onclick="triggerInstall()" class="mt-4 w-full accent-btn text-white rounded-xl py-3 text-xs font-bold tap-bounce">
+          ⚡ Установить на телефон
+        </button>
       </div>
 
-      <!-- Segment Tabs like in the screenshot -->
       <section>
-        <h2 class="text-sm font-bold tracking-tight text-white mb-3">Инструкция по установке</h2>
-
+        <h2 class="text-sm font-bold tracking-tight text-white mb-3">Инструкция</h2>
         <div class="glass-subcard rounded-2xl p-1 grid grid-cols-3 gap-1 border border-white/5">
-          <button onclick="S.installPlatform='ios';render()" 
-            class="py-2.5 rounded-xl text-xs font-bold tap-bounce transition-all ${S.installPlatform === 'ios' ? 'bg-zinc-800 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200'}">
-            iPhone / iPad
-          </button>
           <button onclick="S.installPlatform='android';render()" 
             class="py-2.5 rounded-xl text-xs font-bold tap-bounce transition-all ${S.installPlatform === 'android' ? 'bg-zinc-800 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200'}">
             Android
+          </button>
+          <button onclick="S.installPlatform='ios';render()" 
+            class="py-2.5 rounded-xl text-xs font-bold tap-bounce transition-all ${S.installPlatform === 'ios' ? 'bg-zinc-800 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200'}">
+            iPhone / iPad
           </button>
           <button onclick="S.installPlatform='pc';render()" 
             class="py-2.5 rounded-xl text-xs font-bold tap-bounce transition-all ${S.installPlatform === 'pc' ? 'bg-zinc-800 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200'}">
@@ -715,22 +730,28 @@ function renderTicket() {
   `;
 }
 
+/* ИСПРАВЛЕННАЯ МОДАЛКА БРОНИ (Bottom Sheet с защитой от обрезки экраном) */
 function renderModal() {
   const currentSrv = getService(S.service);
   const slotObj = CONFIG.slots.find(x => x.id === S.slot);
 
   return `
-    <div class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-3">
-      <div class="glass-card rounded-3xl w-full max-w-md p-6 border border-white/10 fade-in">
+    <div class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div onclick="event.stopPropagation()" 
+        class="glass-card rounded-t-[32px] sm:rounded-3xl w-full max-w-md p-6 border border-white/10 fade-in max-h-[90vh] overflow-y-auto pb-[calc(24px+env(safe-area-inset-bottom,16px))]">
+        
+        <!-- Drag Handle for Mobile -->
+        <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-4 sm:hidden"></div>
+
         <div class="flex justify-between items-center pb-3 border-b border-white/10">
           <div>
             <h3 class="font-bold text-base text-white">Подтверждение брони</h3>
             <p class="text-xs text-zinc-400">${fmt(S.date)} · ${slotObj?.time}</p>
           </div>
-          <button onclick="S.modal=false;render()" class="text-zinc-500 hover:text-white text-lg">✕</button>
+          <button onclick="S.modal=false;render()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:text-white text-base">✕</button>
         </div>
 
-        <form onsubmit="handleBookingSubmit(event)" class="mt-5 space-y-3.5">
+        <form onsubmit="handleBookingSubmit(event)" class="mt-4 space-y-3.5">
           <div>
             <label class="text-[11px] font-semibold text-zinc-400 block mb-1">Ваше имя</label>
             <input id="guest_name" required placeholder="Константин" 
@@ -760,8 +781,8 @@ function renderModal() {
             </div>
           </div>
 
-          <button type="submit" class="w-full accent-btn text-white rounded-xl py-3.5 font-bold text-sm tap-bounce mt-2">
-            Забронировать визит
+          <button type="submit" class="w-full accent-btn text-white rounded-xl py-3.5 font-bold text-sm tap-bounce mt-2 shadow-lg shadow-blue-600/30">
+            Подтвердить бронирование
           </button>
         </form>
       </div>
