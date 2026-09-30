@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#07090E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Северная Баня — Бронирование</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;
+    background:#07090E;
+    color:#F1F5F9;
+    font-family:'Plus Jakarta Sans', Manrope, sans-serif;
+    overflow-x:hidden;
+  }
+  ::-webkit-scrollbar{display:none}
+
+  /* Glassmorphism & Neon Glow */
+  .bg-glow{
+    position:fixed;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:500px;
+    height:360px;
+    background:radial-gradient(circle at 50% 20%, rgba(37,99,235,0.18) 0%, rgba(14,165,233,0.06) 45%, transparent 75%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .glass-card{
+    background:linear-gradient(180deg, rgba(22, 28, 42, 0.72) 0%, rgba(13, 17, 26, 0.85) 100%);
+    border:1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:0 12px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+  }
+
+  .glass-subcard{
+    background:rgba(255, 255, 255, 0.03);
+    border:1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .pill-nav{
+    background:rgba(13, 17, 26, 0.85);
+    border:1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+  }
+
+  .accent-btn{
+    background:linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    box-shadow:0 8px 24px -4px rgba(37, 99, 235, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  .accent-btn:active{transform:scale(0.98);filter:brightness(0.95)}
+
+  .tap-bounce{transition:transform .18s cubic-bezier(0.2,0.8,0.2,1)}
+  .tap-bounce:active{transform:scale(0.96)}
+
+  .hero-glow-text{
+    background:linear-gradient(180deg, #FFFFFF 30%, #CBD5E1 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+
+  .fade-in{animation:fadeIn .25s ease-out forwards}
+
+  .addon-card{
+    background:rgba(255,255,255,.028);
+    border:1px solid rgba(255,255,255,.07);
+    transition:background .28s ease,border-color .28s ease,box-shadow .28s ease,transform .18s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .addon-card:active{
+    transform:scale(.985);
+  }
+
+  .addon-card.is-active{
+    background:linear-gradient(180deg,rgba(37,99,235,.16) 0%,rgba(20,28,43,.82) 100%);
+    border-color:rgba(96,165,250,.58);
+    box-shadow:
+      0 0 0 1px rgba(59,130,246,.12),
+      0 10px 28px -12px rgba(37,99,235,.42),
+      inset 0 1px 0 rgba(147,197,253,.08);
+  }
+
+  .addon-price{
+    color:rgba(226,232,240,.72);
+    transition:color .28s ease;
+  }
+
+  .addon-card.is-active .addon-price{
+    color:rgba(191,219,254,.95);
+  }
+
+  .addon-switch{
+    position:relative;
+    width:44px;
+    height:26px;
+    flex:0 0 44px;
+    border-radius:999px;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.22);
+    transition:background .28s ease,border-color .28s ease,box-shadow .28s ease;
+  }
+
+  .addon-switch::after{
+    content:"";
+    position:absolute;
+    width:20px;
+    height:20px;
+    top:2px;
+    left:2px;
+    border-radius:50%;
+    background:#E5E7EB;
+    box-shadow:0 2px 5px rgba(0,0,0,.35),0 1px 1px rgba(255,255,255,.25) inset;
+    transition:transform .28s cubic-bezier(.2,.8,.2,1),background .28s ease;
+  }
+
+  .addon-switch.is-on{
+    background:#2563EB;
+    border-color:rgba(96,165,250,.65);
+    box-shadow:0 0 16px rgba(37,99,235,.28),inset 0 1px 0 rgba(255,255,255,.18);
+  }
+
+  .addon-switch.is-on::after{
+    transform:translateX(18px);
+    background:#fff;
+  }
+
+  .addon-card:focus-visible{
+    outline:2px solid rgba(96,165,250,.85);
+    outline-offset:2px;
+  }
+
+  .drag-scroll{
+    cursor:grab;
+    user-select:none;
+    -webkit-user-select:none;
+    scrollbar-width:none;
+  }
+
+  .drag-scroll.dragging{
+    cursor:grabbing;
+    scroll-behavior:auto !important;
+  }
+
+  .drag-scroll img{
+    -webkit-user-drag:none;
+    user-select:none;
+    pointer-events:none;
+  }
+
+  .price-animate{
+    font-variant-numeric:tabular-nums;
+    font-feature-settings:"tnum";
+  }
+
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(6px)}
+    to{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body class="selection:bg-blue-600 selection:text-white">
+
+<div class="bg-glow"></div>
+<div id="app" class="relative z-10"></div>
+
+<script>
+const CONFIG = {
+  name: "Северная Баня",
+  category: "Банный клуб & SPA",
+  address: "Лесная поляна, 12",
+  phone: "+7 (900) 000-00-00",
+  services: [
+    {
+      id: "bath",
+      name: "Русская Парная",
+      price: 4500,
+      period: "2 часа",
+      capacity: 6,
+      badge: "Традиции",
+      desc: "Ароматная парная на дровах с мягким паром, вениками и зоной сеновала.",
+      photo: "https://images.unsplash.com/photo-1741601273123-ad0d8f2f63d7?auto=format&fit=crop&w=900&q=85"
+    },
+    {
+      id: "barn",
+      name: "Barnhouse & SPA",
+      price: 6500,
+      period: "3 часа",
+      capacity: 8,
+      badge: "Премиум",
+      desc: "Дизайнерский дом с витражными окнами, террасой и просторной гостиной.",
+      photo: "https://images.unsplash.com/photo-1782226796423-8d72656a332c?auto=format&fit=crop&w=900&q=85"
+    },
+    {
+      id: "tub",
+      name: "Чан у ручья",
+      price: 3500,
+      period: "1.5 часа",
+      capacity: 4,
+      badge: "Под открытым небом",
+      desc: "Купель с теплой водой под звездным небом прямо на берегу ручья.",
+      photo: "https://images.unsplash.com/photo-1708630283392-678476d547f8?auto=format&fit=crop&w=900&q=85"
+    }
+  ],
+  slots: [
+    { id: "morning", time: "10:00", label: "Утро" },
+    { id: "day", time: "14:00", label: "День" },
+    { id: "sunset", time: "18:00", label: "Закат" },
+    { id: "night", time: "22:00", label: "Ночь" }
+  ],
+  addons: [
+    { id: "venik", name: "Дубовый / березовый веник", desc: "Распаренный сибирский сбор", price: 700 },
+    { id: "tea", name: "Чайный ритуал на травах", desc: "Самовар, горный мед и баранки", price: 900 },
+    { id: "towels", name: "SPA-комплект премиум", desc: "Махровый халат, тапочки, простыни", price: 500 }
+  ]
+};
+
+const DB = {
+  get bookings(){ return JSON.parse(localStorage.getItem("bookings")||"[]"); },
+  set bookings(v){ localStorage.setItem("bookings", JSON.stringify(v)); },
+  get blocked(){ return JSON.parse(localStorage.getItem("blocked")||"[]"); },
+  set blocked(v){ localStorage.setItem("blocked", JSON.stringify(v)); },
+  get prices(){ return JSON.parse(localStorage.getItem("prices")||"{}"); }
+};
+
+const $ = id => document.getElementById(id);
+const today = () => new Date().toISOString().slice(0, 10);
+const days = () => Array.from({length: 14}, (_, i) => {
+  let d = new Date();
+  d.setHours(12, 0, 0, 0);
+  d.setDate(d.getDate() + i);
+  return d.toISOString().slice(0, 10);
+});
+
+const money = n => new Intl.NumberFormat("ru-RU").format(n) + " ₽";
+const fmt = d => new Date(d + "T12:00").toLocaleDateString("ru-RU", { day: "numeric", month: "long" });
+const esc = s => String(s ?? "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
+const uid = () => "SB-" + Math.random().toString(36).slice(2, 7).toUpperCase();
+
+function servicesList() {
+  const p = DB.prices;
+  return CONFIG.services.map(s => ({ ...s, price: p[s.id] ?? s.price }));
+}
+
+function getService(id) {
+  return servicesList().find(s => s.id === id) || servicesList()[0];
+}
+
+let S = {
+  tab: "book",
+  service: "bath",
+  date: today(),
+  slot: null,
+  addons: [],
+  modal: false,
+  ticket: null,
+  installPlatform: "ios"
+};
+
+function isSlotBusy(d, sId) {
+  return DB.bookings.some(b => b.date === d && b.slot === sId && b.status !== "cancelled") || DB.blocked.includes(d + "_" + sId);
+}
+
+function calculateTotal() {
+  const base = getService(S.service).price;
+  const adds = S.addons.reduce((sum, id) => {
+    const item = CONFIG.addons.find(x => x.id === id);
+    return sum + (item ? (DB.prices["a_" + item.id] ?? item.price) : 0);
+  }, 0);
+  return base + adds;
+}
+
+function render() {
+  const app = $("app");
+  app.innerHTML = `
+    <main class="max-w-[440px] mx-auto min-h-screen px-4 pb-32 pt-3 fade-in">
+      <!-- Status Bar Area Mockup -->
+      <header class="flex items-center justify-between py-2 mb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-black text-sm tracking-tighter">
+            ⚡
+          </div>
+          <div>
+            <div class="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
+              ${esc(CONFIG.name)}
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+            </div>
+            <div class="text-[10px] text-zinc-400 font-medium tracking-wide uppercase">${esc(CONFIG.category)}</div>
+          </div>
+        </div>
+
+        <button onclick="S.tab='pwa';render()" class="tap-bounce glass-subcard rounded-full px-3 py-1.5 flex items-center gap-1.5 text-xs text-zinc-300 border border-white/10 hover:border-blue-500/40">
+          <span class="text-blue-400 text-xs">📱</span> В телефон
+        </button>
+      </header>
+
+      ${S.tab === "book" ? renderBooking() : ""}
+      ${S.tab === "ticket" ? renderTicket() : ""}
+      ${S.tab === "rituals" ? renderRituals() : ""}
+      ${S.tab === "pwa" ? renderPwaBanner() : ""}
+
+      <!-- Bottom Dock Bar -->
+      <nav class="fixed bottom-4 left-0 right-0 z-40 px-4">
+        <div class="max-w-[400px] mx-auto pill-nav rounded-2xl p-1.5 shadow-2xl flex items-center justify-between">
+          ${[
+            ["book", "Запись", `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`],
+            ["ticket", "Мой визит", `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>`],
+            ["rituals", "Услуги", `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>`],
+            ["pwa", "Приложение", `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`]
+          ].map(item => `
+            <button onclick="S.tab='${item[0]}';render()" class="flex-1 py-1.5 rounded-xl text-center tap-bounce ${S.tab === item[0] ? 'bg-blue-600 text-white font-bold shadow-lg shadow-blue-600/30' : 'text-zinc-400 hover:text-zinc-200'}">
+              ${item[2]}
+              <span class="text-[10px] block leading-none tracking-tight">${item[1]}</span>
+            </button>
+          `).join("")}
+        </div>
+      </nav>
+
+      ${S.modal ? renderModal() : ""}
+      ${S.ticket?.new ? renderSuccess() : ""}
+    </main>
+  `;
+
+  if (S.tab === "book") {
+    requestAnimationFrame(() => {
+      document.getElementById("day-" + S.date)?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      enableDragScroll("services-scroll");
+      enableDragScroll("dates-scroll");
+    });
+  }
+}
+
+function renderBooking() {
+  const currentSrv = getService(S.service);
+  const dates = days();
+
+  return `
+    <div class="space-y-6 fade-in">
+      <!-- Section: Service Picker -->
+      <section>
+        <div class="flex items-baseline justify-between mb-3">
+          <h2 class="text-base font-bold tracking-tight text-white">1. Выберите пространство</h2>
+          <span class="text-xs text-zinc-400">${servicesList().length} варианта</span>
+        </div>
+
+        <div id="services-scroll" class="drag-scroll flex overflow-x-auto snap-x snap-mandatory gap-3 -mx-4 px-4 pb-2">
+          ${servicesList().map(s => {
+            const isSelected = s.id === S.service;
+            return `
+              <div onclick="S.service='${s.id}';S.slot=null;render()" 
+                class="snap-center shrink-0 w-[84vw] max-w-[340px] rounded-3xl overflow-hidden glass-card cursor-pointer tap-bounce relative transition-all duration-300 ${isSelected ? 'ring-2 ring-blue-500 shadow-xl shadow-blue-500/10' : 'opacity-85 hover:opacity-100'}">
+                <div class="relative h-44 w-full overflow-hidden">
+                  <img src="${s.photo}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" alt="${esc(s.name)}">
+                  <div class="absolute inset-0 bg-gradient-to-t from-[#0A0D14] via-[#0A0D14]/40 to-transparent"></div>
+                  
+                  <span class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 text-white text-[10px] font-semibold tracking-wide uppercase px-2.5 py-1 rounded-full">
+                    ${s.badge || 'Парная'}
+                  </span>
+
+                  <div class="absolute top-3 right-3 bg-blue-600/90 backdrop-blur text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+                    ${money(s.price)}
+                  </div>
+                </div>
+
+                <div class="p-4 pt-2">
+                  <h3 class="font-extrabold text-base text-white tracking-tight">${esc(s.name)}</h3>
+                  <p class="text-xs text-zinc-400 mt-1 line-clamp-2 leading-relaxed">${esc(s.desc)}</p>
+                  
+                  <div class="flex items-center gap-4 mt-3 pt-3 border-t border-white/5 text-[11px] text-zinc-300 font-medium">
+                    <span class="flex items-center gap-1">⏱ ${s.period}</span>
+                    <span class="flex items-center gap-1">👥 до ${s.capacity} гостей</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </section>
+
+      <!-- Section: Date -->
+      <section>
+        <div class="flex items-baseline justify-between mb-3">
+          <h2 class="text-base font-bold tracking-tight text-white">2. Дата посещения</h2>
+          <span class="text-xs text-blue-400 font-medium">${fmt(S.date)}</span>
+        </div>
+
+        <div id="dates-scroll" class="drag-scroll flex gap-2.5 overflow-x-auto -mx-4 px-4 pb-2">
+          ${dates.map(d => {
+            const isSel = d === S.date;
+            const dateObj = new Date(d + "T12:00");
+            const wday = dateObj.toLocaleDateString("ru-RU", { weekday: "short" });
+            const dayNum = dateObj.getDate();
+            const month = dateObj.toLocaleDateString("ru-RU", { month: "short" });
+
+            return `
+              <button id="day-${d}" onclick="S.date='${d}';S.slot=null;render()" 
+                class="shrink-0 w-16 py-3 rounded-2xl tap-bounce flex flex-col items-center justify-center transition-all ${
+                  isSel 
+                  ? 'bg-blue-600 text-white font-bold ring-2 ring-blue-400 shadow-lg shadow-blue-600/30' 
+                  : 'glass-card text-zinc-300 hover:border-zinc-500'
+                }">
+                <span class="text-[10px] uppercase font-semibold tracking-wider ${isSel ? 'text-blue-100' : 'text-zinc-500'}">${wday}</span>
+                <span class="text-lg font-extrabold my-0.5">${dayNum}</span>
+                <span class="text-[9px] ${isSel ? 'text-blue-100' : 'text-zinc-500'}">${month}</span>
+              </button>
+            `;
+          }).join("")}
+        </div>
+      </section>
+
+      <!-- Section: Slots -->
+      <section>
+        <div class="flex items-baseline justify-between mb-3">
+          <h2 class="text-base font-bold tracking-tight text-white">3. Время сеанса</h2>
+          <span class="text-xs text-zinc-400">Слоты по ${currentSrv.period}</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          ${CONFIG.slots.map(x => {
+            const busy = isSlotBusy(S.date, x.id);
+            const active = S.slot === x.id;
+
+            return `
+              <button ${busy ? "disabled" : ""} onclick="S.slot='${x.id}';render()" 
+                class="p-3.5 rounded-2xl glass-card text-left tap-bounce relative transition-all ${
+                  busy 
+                  ? 'opacity-30 cursor-not-allowed bg-zinc-950/40 border-zinc-900' 
+                  : active 
+                    ? 'ring-2 ring-blue-500 bg-blue-950/30 shadow-lg shadow-blue-500/20' 
+                    : 'hover:border-zinc-500'
+                }">
+                <div class="flex justify-between items-center">
+                  <span class="text-base font-extrabold text-white">${x.time}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-md font-medium uppercase ${
+                    busy ? 'bg-red-950/60 text-red-400' : active ? 'bg-blue-500 text-white' : 'bg-white/5 text-zinc-400'
+                  }">
+                    ${busy ? 'Занято' : x.label}
+                  </span>
+                </div>
+                <div class="text-[11px] text-zinc-400 mt-2">${busy ? 'Недоступно' : 'Свободно для брони'}</div>
+              </button>
+            `;
+          }).join("")}
+        </div>
+      </section>
+
+      <!-- Section: Addons -->
+      <section>
+        <div class="flex items-baseline justify-between mb-3">
+          <h2 class="text-base font-bold tracking-tight text-white">4. Дополнительные ритуалы</h2>
+          <span class="text-xs text-zinc-400">По желанию</span>
+        </div>
+
+        <div class="space-y-2.5">
+          ${CONFIG.addons.map(a => {
+            const active = S.addons.includes(a.id);
+            const currentPrice = DB.prices["a_" + a.id] ?? a.price;
+
+            return `
+              <div
+                id="addon-${a.id}"
+                onclick="toggleAddon('${a.id}')"
+                class="addon-card glass-card rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer select-none ${active ? 'is-active' : 'hover:border-white/15'}"
+                role="button"
+                tabindex="0"
+                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAddon('${a.id}')}"
+                aria-pressed="${active}"
+              >
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-sm text-white leading-snug">${esc(a.name)}</div>
+                  <div class="text-xs text-zinc-400 mt-0.5 leading-relaxed">${esc(a.desc)}</div>
+                </div>
+
+                <div class="flex items-center gap-2.5 shrink-0">
+                  <span class="addon-price text-[11px] font-semibold whitespace-nowrap">
+                    +${money(currentPrice)}
+                  </span>
+                  <span
+                    id="addon-switch-${a.id}"
+                    class="addon-switch ${active ? 'is-on' : ''}"
+                    role="switch"
+                    aria-checked="${active}"
+                    aria-label="Выбрать: ${esc(a.name)}"
+                  ></span>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </section>
+
+      <!-- Floating Summary Card -->
+      <div class="glass-card rounded-3xl p-4 sticky bottom-24 shadow-2xl border border-blue-500/20">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-[11px] text-zinc-400 uppercase font-semibold">Итого к оплате</div>
+            <div id="total-price" class="price-animate text-2xl font-black text-white tracking-tight" data-value="${calculateTotal()}">${money(calculateTotal())}</div>
+          </div>
+
+          <button ${S.slot ? "" : "disabled"} onclick="S.modal=true;render()" 
+            class="accent-btn text-white rounded-2xl px-6 py-3.5 font-bold text-sm disabled:opacity-30 disabled:pointer-events-none tap-bounce">
+            ${S.slot ? 'Оформить бронь' : 'Выберите время'}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPwaBanner() {
+  const steps = {
+    ios: [
+      { num: "01", text: "Нажмите кнопку <b>«Поделиться»</b> (квадрат со стрелкой вверх) в нижней панели Safari." },
+      { num: "02", text: "Прокрутите вниз и выберите <b>«На экран «Домой»</b>." },
+      { num: "03", text: "Нажмите <b>«Добавить»</b> в верхнем правом углу. Иконка появится на рабочем столе." }
+    ],
+    android: [
+      { num: "01", text: "Нажмите на <b>меню из трех точек</b> в правом верхнем углу браузера Chrome." },
+      { num: "02", text: "Выберите пункт <b>«Установить приложение»</b> или «Добавить на гл. экран»." },
+      { num: "03", text: "Подтвердите установку в появившемся окне." }
+    ],
+    pc: [
+      { num: "01", text: "Нажмите на <b>значок установки</b> в правой части адресной строки браузера." },
+      { num: "02", text: "Нажмите <b>«Установить»</b> для быстрого запуска в отдельном окне." }
+    ]
+  };
+
+  return `
+    <div class="space-y-6 fade-in pb-6">
+      <div class="relative overflow-hidden rounded-3xl glass-card p-6 border border-blue-500/20">
+        <div class="absolute -right-8 -top-8 w-44 h-44 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-400/30 flex items-center justify-center text-blue-400 text-xl font-bold shadow-lg shadow-blue-500/10">
+            ⚡
+          </div>
+          <div>
+            <div class="text-xs uppercase tracking-widest text-blue-400 font-bold">PWA Web App</div>
+            <div class="text-sm font-semibold text-zinc-300">Приложение банного клуба</div>
+          </div>
+        </div>
+
+        <h1 class="text-2xl font-extrabold hero-glow-text leading-tight">
+          Добавьте клуб<br>на главный экран
+        </h1>
+        <p class="text-xs text-zinc-400 mt-2 leading-relaxed">
+          Быстрый доступ к датам, просмотр своих броней без авторизации и моментальные напоминания о сеансах.
+        </p>
+
+        <div class="mt-4 flex items-center gap-2 text-xs text-blue-300 bg-blue-950/40 border border-blue-800/40 rounded-xl px-3.5 py-2">
+          <span>📲</span> <span>Работает без скачивания из App Store / Google Play</span>
+        </div>
+      </div>
+
+      <!-- Segment Tabs like in the screenshot -->
+      <section>
+        <h2 class="text-sm font-bold tracking-tight text-white mb-3">Инструкция по установке</h2>
+
+        <div class="glass-subcard rounded-2xl p-1 grid grid-cols-3 gap-1 border border-white/5">
+          <button onclick="S.installPlatform='ios';render()" 
+            class="py-2.5 rounded-xl text-xs font-bold tap-bounce transition-all ${S.installPlatform === 'ios' ? 'bg-zinc-800 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200'}">
+            iPhone / iPad
+          </button>
+          <button onclick="S.installPlatform='android';render()" 
+            class="py-2.5 rounded-xl text-xs font-bold tap-bounce transition-all ${S.installPlatform === 'android' ? 'bg-zinc-800 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200'}">
+            Android
+          </button>
+          <button onclick="S.installPlatform='pc';render()" 
+            class="py-2.5 rounded-xl text-xs font-bold tap-bounce transition-all ${S.installPlatform === 'pc' ? 'bg-zinc-800 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200'}">
+            Компьютер
+          </button>
+        </div>
+
+        <div class="mt-4 space-y-2.5">
+          ${steps[S.installPlatform].map(st => `
+            <div class="glass-card rounded-2xl p-4 flex gap-3.5 items-start">
+              <span class="text-blue-400 font-extrabold text-xs tracking-wider bg-blue-950/60 border border-blue-800/40 px-2 py-1 rounded-lg">
+                ${st.num}
+              </span>
+              <p class="text-xs text-zinc-300 leading-relaxed pt-0.5">${st.text}</p>
+            </div>
+          `).join("")}
+        </div>
+      </section>
+
+      <div class="text-center pt-2">
+        <button onclick="S.tab='book';render()" class="text-xs font-semibold text-zinc-400 hover:text-white tap-bounce">
+          ← Вернуться к бронированию
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderRituals() {
+  return `
+    <div class="space-y-4 fade-in">
+      <div class="mb-4">
+        <h1 class="text-xl font-extrabold text-white">Все услуги и ритуалы</h1>
+        <p class="text-xs text-zinc-400 mt-1">Качественный отдых с полным банным сервисом</p>
+      </div>
+
+      <div class="space-y-3">
+        ${CONFIG.addons.map(a => `
+          <div class="glass-card rounded-2xl p-4 flex justify-between items-center">
+            <div>
+              <div class="font-bold text-sm text-white">${esc(a.name)}</div>
+              <div class="text-xs text-zinc-400 mt-1">${esc(a.desc)}</div>
+              <div class="text-xs font-bold text-blue-400 mt-2">${money(DB.prices["a_" + a.id] ?? a.price)}</div>
+            </div>
+            <button onclick="S.tab='book';render()" class="glass-subcard text-xs text-zinc-300 px-3 py-2 rounded-xl border border-white/10 hover:border-blue-500 tap-bounce">
+              Выбрать
+            </button>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 mt-6 space-y-3">
+        <h3 class="font-bold text-sm text-white">Контакты клуба</h3>
+        <div class="text-xs text-zinc-300 flex items-center gap-2">📍 ${esc(CONFIG.address)}</div>
+        <div class="text-xs text-zinc-300 flex items-center gap-2">📞 <a href="tel:${esc(CONFIG.phone)}" class="text-blue-400 font-bold">${esc(CONFIG.phone)}</a></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTicket() {
+  const b = JSON.parse(localStorage.getItem("myBooking") || "null");
+  if (!b) {
+    return `
+      <div class="text-center py-24 fade-in">
+        <div class="w-16 h-16 rounded-3xl glass-card mx-auto flex items-center justify-center text-2xl text-zinc-500 mb-4">
+          🎫
+        </div>
+        <h2 class="text-lg font-bold text-white">Нет активных записей</h2>
+        <p class="text-xs text-zinc-500 mt-1 max-w-[240px] mx-auto">Выберите удобную дату и время, чтобы забронировать визит</p>
+        <button onclick="S.tab='book';render()" class="mt-6 accent-btn text-white rounded-2xl px-6 py-3 text-xs font-bold tap-bounce">
+          Забронировать сейчас
+        </button>
+      </div>
+    `;
+  }
+
+  const srv = getService(b.service);
+  const slotObj = CONFIG.slots.find(x => x.id === b.slot);
+
+  return `
+    <div class="fade-in space-y-4">
+      <div class="flex justify-between items-center">
+        <h1 class="text-xl font-extrabold text-white">Ваш электронный билет</h1>
+        <span class="text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 px-2.5 py-1 rounded-full font-bold uppercase">
+          Активен
+        </span>
+      </div>
+
+      <div class="glass-card rounded-3xl p-6 border border-blue-500/30 relative overflow-hidden">
+        <div class="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Код бронирования</div>
+        <div class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-200 tracking-wider mt-1">
+          ${b.code}
+        </div>
+
+        <div class="my-5 border-t border-dashed border-white/10"></div>
+
+        <div class="space-y-3 text-xs">
+          <div class="flex justify-between items-center">
+            <span class="text-zinc-400">Гость:</span>
+            <span class="font-bold text-white">${esc(b.name)} (${esc(b.phone)})</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-zinc-400">Пространство:</span>
+            <span class="font-bold text-white">${esc(srv.name)}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-zinc-400">Дата:</span>
+            <span class="font-bold text-white">${fmt(b.date)}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-zinc-400">Сеанс:</span>
+            <span class="font-bold text-blue-400">${slotObj?.time} (${slotObj?.label})</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-white/5">
+            <span class="text-zinc-400">Сумма заказа:</span>
+            <span class="text-base font-extrabold text-white">${money(b.sum)}</span>
+          </div>
+        </div>
+
+        ${b.addons?.length ? `
+          <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-zinc-400">
+            <span class="text-zinc-500 font-medium">Допы:</span> 
+            ${b.addons.map(id => CONFIG.addons.find(a => a.id === id)?.name).filter(Boolean).join(", ")}
+          </div>
+        ` : ""}
+      </div>
+
+      <div class="glass-subcard rounded-2xl p-4 text-xs text-zinc-400 leading-relaxed text-center">
+        Покажите этот экран администратору при входе. Мы уже греем парную к вашему визиту.
+      </div>
+    </div>
+  `;
+}
+
+function renderModal() {
+  const currentSrv = getService(S.service);
+  const slotObj = CONFIG.slots.find(x => x.id === S.slot);
+
+  return `
+    <div class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-3">
+      <div class="glass-card rounded-3xl w-full max-w-md p-6 border border-white/10 fade-in">
+        <div class="flex justify-between items-center pb-3 border-b border-white/10">
+          <div>
+            <h3 class="font-bold text-base text-white">Подтверждение брони</h3>
+            <p class="text-xs text-zinc-400">${fmt(S.date)} · ${slotObj?.time}</p>
+          </div>
+          <button onclick="S.modal=false;render()" class="text-zinc-500 hover:text-white text-lg">✕</button>
+        </div>
+
+        <form onsubmit="handleBookingSubmit(event)" class="mt-5 space-y-3.5">
+          <div>
+            <label class="text-[11px] font-semibold text-zinc-400 block mb-1">Ваше имя</label>
+            <input id="guest_name" required placeholder="Константин" 
+              class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500 transition-colors">
+          </div>
+
+          <div>
+            <label class="text-[11px] font-semibold text-zinc-400 block mb-1">Номер телефона</label>
+            <input id="guest_phone" required type="tel" placeholder="+7 (999) 000-00-00" 
+              class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500 transition-colors">
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/5 space-y-1.5 text-xs">
+            <div class="flex justify-between text-zinc-400">
+              <span>${esc(currentSrv.name)}:</span>
+              <span class="text-white font-semibold">${money(currentSrv.price)}</span>
+            </div>
+            ${S.addons.length ? `
+              <div class="flex justify-between text-zinc-400">
+                <span>Доп. ритуалы (${S.addons.length}):</span>
+                <span class="text-white font-semibold">+${money(calculateTotal() - currentSrv.price)}</span>
+              </div>
+            ` : ""}
+            <div class="flex justify-between pt-1 border-t border-white/10 font-bold text-sm text-white">
+              <span>Итого:</span>
+              <span class="text-blue-400 font-extrabold">${money(calculateTotal())}</span>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full accent-btn text-white rounded-xl py-3.5 font-bold text-sm tap-bounce mt-2">
+            Забронировать визит
+          </button>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+function renderSuccess() {
+  const b = S.ticket;
+  return `
+    <div class="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
+      <div class="glass-card rounded-3xl p-7 w-full max-w-sm text-center border border-blue-500/40 fade-in shadow-2xl">
+        <div class="w-16 h-16 rounded-full bg-blue-600/20 border border-blue-500/40 text-blue-400 flex items-center justify-center text-3xl mx-auto mb-4">
+          ✓
+        </div>
+        <h2 class="text-xl font-extrabold text-white">Бронь подтверждена!</h2>
+        <p class="text-xs text-zinc-400 mt-1">Ждем вас в гости. Данные сохранены.</p>
+
+        <div class="mt-5 p-3.5 rounded-2xl bg-white/5 border border-white/5">
+          <div class="text-[10px] uppercase font-bold text-zinc-400">Номер заказа</div>
+          <div class="text-2xl font-black text-blue-400 tracking-wider mt-0.5">${b.code}</div>
+        </div>
+
+        <button onclick="S.ticket=null;S.tab='ticket';render()" class="w-full accent-btn text-white rounded-xl py-3.5 font-bold text-sm mt-6 tap-bounce">
+          Посмотреть билет
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+let totalAnimationFrame = null;
+
+function animateTotalPrice(nextValue) {
+  const el = $("total-price");
+  if (!el) return;
+
+  const currentValue = Number(el.dataset.value || 0);
+  const startValue = Number.isFinite(currentValue) ? currentValue : nextValue;
+  const targetValue = Number(nextValue);
+
+  if (totalAnimationFrame) cancelAnimationFrame(totalAnimationFrame);
+
+  if (startValue === targetValue) {
+    el.dataset.value = String(targetValue);
+    el.textContent = money(targetValue);
+    return;
+  }
+
+  const duration = 360;
+  const startedAt = performance.now();
+
+  const tick = now => {
+    const progress = Math.min(1, (now - startedAt) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const value = Math.round(startValue + (targetValue - startValue) * eased);
+
+    el.dataset.value = String(value);
+    el.textContent = money(value);
+
+    if (progress < 1) {
+      totalAnimationFrame = requestAnimationFrame(tick);
+    } else {
+      totalAnimationFrame = null;
+      el.dataset.value = String(targetValue);
+      el.textContent = money(targetValue);
+    }
+  };
+
+  totalAnimationFrame = requestAnimationFrame(tick);
+}
+
+function toggleAddon(id) {
+  const idx = S.addons.indexOf(id);
+  const wasActive = idx >= 0;
+
+  if (wasActive) {
+    S.addons.splice(idx, 1);
+  } else {
+    S.addons.push(id);
+  }
+
+  const active = !wasActive;
+  const card = $("addon-" + id);
+  const toggle = $("addon-switch-" + id);
+
+  if (card) {
+    card.classList.toggle("is-active", active);
+    card.classList.toggle("hover:border-white/15", !active);
+    card.setAttribute("aria-pressed", String(active));
+  }
+
+  if (toggle) {
+    toggle.classList.toggle("is-on", active);
+    toggle.setAttribute("aria-checked", String(active));
+  }
+
+  animateTotalPrice(calculateTotal());
+}
+
+function enableDragScroll(id) {
+  const el = $(id);
+  if (!el || el.dataset.dragScrollReady === "1") return;
+
+  el.dataset.dragScrollReady = "1";
+
+  let isDragging = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+  let moved = false;
+
+  el.addEventListener("mousedown", event => {
+    if (event.button !== 0) return;
+
+    isDragging = true;
+    moved = false;
+    startX = event.clientX;
+    startScrollLeft = el.scrollLeft;
+    el.classList.add("dragging");
+  });
+
+  window.addEventListener("mousemove", event => {
+    if (!isDragging) return;
+
+    const dx = event.clientX - startX;
+    if (Math.abs(dx) > 4) moved = true;
+
+    el.scrollLeft = startScrollLeft - dx;
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (!isDragging) return;
+    isDragging = false;
+    el.classList.remove("dragging");
+  });
+
+  el.addEventListener("click", event => {
+    if (moved) {
+      event.preventDefault();
+      event.stopPropagation();
+      moved = false;
+    }
+  }, true);
+
+  el.addEventListener("dragstart", event => event.preventDefault());
+}
+
+function handleBookingSubmit(e) {
+  e.preventDefault();
+
+  if (isSlotBusy(S.date, S.slot)) {
+    alert("Этот временной интервал уже занят! Выберите другое время.");
+    S.modal = false;
+    render();
+    return;
+  }
+
+  const newBooking = {
+    id: uid(),
+    code: uid(),
+    name: $("guest_name").value.trim(),
+    phone: $("guest_phone").value.trim(),
+    service: S.service,
+    date: S.date,
+    slot: S.slot,
+    addons: [...S.addons],
+    sum: calculateTotal(),
+    status: "new",
+    created: Date.now()
+  };
+
+  const list = DB.bookings;
+  list.unshift(newBooking);
+  DB.bookings = list;
+  localStorage.setItem("myBooking", JSON.stringify(newBooking));
+
+  S.modal = false;
+  S.ticket = { new: true, ...newBooking };
+  render();
+}
+
+window.addEventListener("storage", render);
+render();
+</script>
+</body>
+</html>

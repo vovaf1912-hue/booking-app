@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#07090E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title id="admin-title">Панель управления</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;
+    background:#07090E;
+    color:#F1F5F9;
+    font-family:'Plus Jakarta Sans', Manrope, sans-serif;
+    overflow-x:hidden;
+  }
+  ::-webkit-scrollbar{display:none}
+
+  .bg-glow{
+    position:fixed;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:500px;
+    height:360px;
+    background:radial-gradient(circle at 50% 10%, rgba(37,99,235,0.18) 0%, rgba(14,165,233,0.05) 50%, transparent 80%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .glass-card{
+    background:linear-gradient(180deg, rgba(22, 28, 42, 0.75) 0%, rgba(13, 17, 26, 0.88) 100%);
+    border:1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:0 12px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+  }
+
+  .glass-subcard{
+    background:rgba(255, 255, 255, 0.03);
+    border:1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .pill-nav{
+    background:rgba(13, 17, 26, 0.92);
+    border:1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+  }
+
+  .accent-btn{
+    background:linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    box-shadow:0 8px 24px -4px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  .accent-btn:active{transform:scale(0.97)}
+
+  .tap-bounce{transition:transform .18s cubic-bezier(0.2,0.8,0.2,1)}
+  .tap-bounce:active{transform:scale(0.96)}
+
+  .field{
+    width:100%;
+    background:rgba(0,0,0,.45);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;
+    padding:12px 14px;
+    color:#fff;
+    outline:none;
+    transition:border-color .2s;
+  }
+  .field:focus{border-color:rgba(59,130,246,.75)}
+
+  .pin-input{
+    letter-spacing:.38em;
+    font-size:26px;
+    font-weight:800;
+    text-align:center;
+  }
+
+  .status-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    border-radius:999px;
+    padding:4px 8px;
+    font-size:10px;
+    line-height:1;
+    font-weight:800;
+    text-transform:uppercase;
+  }
+  .status-new{color:#93c5fd;background:rgba(30,64,175,.25);border:1px solid rgba(59,130,246,.3)}
+  .status-confirmed{color:#6ee7b7;background:rgba(6,78,59,.3);border:1px solid rgba(16,185,129,.3)}
+  .status-cancelled{color:#fca5a5;background:rgba(127,29,29,.25);border:1px solid rgba(239,68,68,.3)}
+
+  .slot-open{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
+  .slot-open:active{background:rgba(37,99,235,.15);border-color:#3B82F6}
+  .slot-blocked{background:rgba(127,29,29,.22);border:1px solid rgba(239,68,68,.35)}
+  .slot-booked{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3)}
+
+  .tab-pane{display:none}
+  .tab-pane.active{display:block}
+
+  .fade-in{animation:fadeIn .2s ease-out forwards}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div id="app" class="relative z-10"></div>
+
+<script>
+"use strict";
+
+// Динамическое чтение параметров из адресной строки
+const urlParams = new URLSearchParams(window.location.search);
+
+const CONFIG = {
+  name: urlParams.get('name') || "Северная Баня",
+  category: urlParams.get('cat') || "Панель управления",
+  adminPin: urlParams.get('pin') || "1234",
+  services: [
+    { id: "bath", name: urlParams.get('s1_name') || "Русская Парная", price: Number(urlParams.get('s1_price')) || 4500 },
+    { id: "barn", name: urlParams.get('s2_name') || "Barnhouse & SPA", price: Number(urlParams.get('s2_price')) || 6500 },
+    { id: "tub", name: urlParams.get('s3_name') || "Чан у ручья", price: Number(urlParams.get('s3_price')) || 3500 }
+  ],
+  addons: [
+    { id: "venik", name: "Дубовый / березовый веник", price: 700 },
+    { id: "tea", name: "Чайный ритуал на травах", price: 900 },
+    { id: "towels", name: "SPA-комплект премиум", price: 500 }
+  ],
+  slots: [
+    { id: "morning", time: "10:00", label: "Утро" },
+    { id: "day", time: "14:00", label: "День" },
+    { id: "sunset", time: "18:00", label: "Закат" },
+    { id: "night", time: "22:00", label: "Ночь" }
+  ]
+};
+
+document.getElementById("admin-title").innerText = `${CONFIG.name} — Панель управления`;
+
+const SESSION_KEY = "adminSessionAuth";
+
+let state = {
+  tab: "bookings",
+  filter: "all",
+  search: ""
+};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
+const money = n => new Intl.NumberFormat("ru-RU").format(Number(n) || 0) + " ₽";
+const today = () => new Date().toISOString().slice(0, 10);
+
+const readBookings = () => {
+  try { return JSON.parse(localStorage.getItem("bookings") || "[]"); } catch { return []; }
+};
+const writeBookings = v => localStorage.setItem("bookings", JSON.stringify(v));
+
+const readPrices = () => {
+  try { return JSON.parse(localStorage.getItem("prices") || "{}"); } catch { return {}; }
+};
+const writePrices = v => localStorage.setItem("prices", JSON.stringify(v));
+
+const readBlocked = () => {
+  try { return JSON.parse(localStorage.getItem("blocked") || "[]"); } catch { return []; }
+};
+const writeBlocked = v => localStorage.setItem("blocked", JSON.stringify(v));
+
+function getEffectivePrice(id) {
+  const p = readPrices();
+  const s = CONFIG.services.find(x => x.id === id);
+  return Number(p[id] ?? s?.price ?? 0);
+}
+
+function getEffectiveAddonPrice(id) {
+  const p = readPrices();
+  const a = CONFIG.addons.find(x => x.id === id);
+  return Number(p["a_" + id] ?? a?.price ?? 0);
+}
+
+function isAuth() {
+  return sessionStorage.getItem(SESSION_KEY) === "1";
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const pinInput = $("pin");
+  if (!pinInput) return;
+
+  if (pinInput.value === CONFIG.adminPin) {
+    sessionStorage.setItem(SESSION_KEY, "1");
+    render();
+  } else {
+    pinInput.value = "";
+    showToast("Неверный PIN-код", "error");
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  render();
+}
+
+function render() {
+  const app = $("app");
+  if (!isAuth()) {
+    renderLogin(app);
+  } else {
+    renderDashboard(app);
+  }
+}
+
+function renderLogin(app) {
+  const clientHref = "index.html" + window.location.search;
+  app.innerHTML = `
+    <main class="min-h-screen flex items-center justify-center p-4">
+      <div class="w-full max-w-[360px] fade-in">
+        <div class="text-center mb-6">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 text-2xl font-bold shadow-lg shadow-blue-500/10">⚡</div>
+          <h1 class="text-xl font-extrabold text-white mt-3">${esc(CONFIG.name)}</h1>
+          <p class="text-xs text-zinc-400 mt-1">Вход для владельца / администратора</p>
+        </div>
+
+        <div class="glass-card rounded-3xl p-6">
+          <form onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2 text-center">Введите PIN-код</label>
+              <input id="pin" type="password" inputmode="numeric" maxlength="6" autofocus placeholder="••••" required class="field pin-input">
+            </div>
+            <button type="submit" class="w-full accent-btn text-white rounded-xl py-3.5 font-bold text-sm tap-bounce">
+              Войти в CRM
+            </button>
+          </form>
+        </div>
+
+        <div class="text-center mt-5">
+          <a href="${clientHref}" class="text-xs text-zinc-500 hover:text-white transition-colors">← Открыть клиентский сайт</a>
+        </div>
+      </div>
+    </main>
+  `;
+}
+
+function renderDashboard(app) {
+  const bookings = readBookings();
+  const newCount = bookings.filter(b => b.status === "new").length;
+  const clientHref = "index.html" + window.location.search;
+
+  app.innerHTML = `
+    <main class="max-w-md mx-auto min-h-screen px-4 pb-28 pt-3 fade-in">
+      <header class="flex items-center justify-between py-2 mb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-black text-sm">⚡</div>
+          <div>
+            <div class="text-sm font-bold text-white flex items-center gap-1.5">
+              ${esc(CONFIG.name)}
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+            </div>
+            <div class="text-[10px] text-zinc-400 font-medium tracking-wide uppercase">Admin CRM</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <a href="${clientHref}" class="glass-subcard rounded-xl px-2.5 py-1.5 text-xs text-zinc-300 hover:text-white tap-bounce">
+            Витрина
+          </a>
+          <button onclick="logout()" class="glass-subcard rounded-xl px-2.5 py-1.5 text-xs text-red-400 hover:text-red-300 tap-bounce">
+            Выйти
+          </button>
+        </div>
+      </header>
+
+      <div id="tab-bookings" class="tab-pane ${state.tab === 'bookings' ? 'active' : ''}">
+        ${renderBookingsTab(bookings)}
+      </div>
+
+      <div id="tab-prices" class="tab-pane ${state.tab === 'prices' ? 'active' : ''}">
+        ${renderPricesTab()}
+      </div>
+
+      <div id="tab-slots" class="tab-pane ${state.tab === 'slots' ? 'active' : ''}">
+        ${renderSlotsTab(bookings)}
+      </div>
+
+      <nav class="fixed bottom-4 left-0 right-0 z-40 px-4">
+        <div class="max-w-[400px] mx-auto pill-nav rounded-2xl p-1.5 shadow-2xl flex items-center justify-between">
+          <button onclick="switchTab('bookings')" class="flex-1 py-1.5 rounded-xl text-center tap-bounce relative ${state.tab === 'bookings' ? 'bg-blue-600 text-white font-bold shadow-lg shadow-blue-600/30' : 'text-zinc-400 hover:text-zinc-200'}">
+            ${newCount > 0 ? `<span class="absolute top-1 right-4 w-2 h-2 rounded-full bg-amber-400"></span>` : ''}
+            <span class="text-base block">📋</span>
+            <span class="text-[10px] block leading-none">Заявки</span>
+          </button>
+
+          <button onclick="switchTab('prices')" class="flex-1 py-1.5 rounded-xl text-center tap-bounce ${state.tab === 'prices' ? 'bg-blue-600 text-white font-bold shadow-lg shadow-blue-600/30' : 'text-zinc-400 hover:text-zinc-200'}">
+            <span class="text-base block">🏷️</span>
+            <span class="text-[10px] block leading-none">Цены</span>
+          </button>
+
+          <button onclick="switchTab('slots')" class="flex-1 py-1.5 rounded-xl text-center tap-bounce ${state.tab === 'slots' ? 'bg-blue-600 text-white font-bold shadow-lg shadow-blue-600/30' : 'text-zinc-400 hover:text-zinc-200'}">
+            <span class="text-base block">⏱</span>
+            <span class="text-[10px] block leading-none">Слоты</span>
+          </button>
+        </div>
+      </nav>
+    </main>
+
+    <div id="toast-root" class="fixed bottom-20 left-4 right-4 z-50 pointer-events-none"></div>
+  `;
+}
+
+function switchTab(t) {
+  state.tab = t;
+  document.querySelectorAll(".tab-pane").forEach(el => el.classList.remove("active"));
+  const target = $("tab-" + t);
+  if (target) target.classList.add("active");
+  render();
+}
+
+function renderBookingsTab(bookings) {
+  const filtered = bookings.filter(b => {
+    if (state.filter !== "all" && b.status !== state.filter) return false;
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      return (b.name?.toLowerCase().includes(q) || b.phone?.includes(q) || b.code?.toLowerCase().includes(q));
+    }
+    return true;
+  });
+
+  return `
+    <div class="space-y-3.5 fade-in">
+      <div class="relative">
+        <input 
+          id="search-input" 
+          value="${esc(state.search)}" 
+          oninput="state.search=this.value; updateBookingsList()" 
+          placeholder="Поиск по имени, номеру, коду..." 
+          class="field text-xs pl-9 pr-8"
+        >
+        <span class="absolute left-3 top-3 text-zinc-500 text-xs">🔍</span>
+        ${state.search ? `<button onclick="state.search=''; render();" class="absolute right-3 top-3 text-zinc-500 text-xs">✕</button>` : ''}
+      </div>
+
+      <div class="pill-nav rounded-xl p-1 grid grid-cols-4 gap-1 text-center">
+        ${[
+          ["all", "Все"],
+          ["new", "Новые"],
+          ["confirmed", "Приняты"],
+          ["cancelled", "Отмена"]
+        ].map(([val, label]) => `
+          <button onclick="state.filter='${val}'; render();" class="py-1.5 rounded-lg text-[10px] font-bold tap-bounce ${state.filter === val ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white'}">
+            ${label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div id="bookings-container" class="space-y-3 pt-1">
+        ${renderBookingsListOnly(filtered)}
+      </div>
+    </div>
+  `;
+}
+
+function renderBookingsListOnly(list) {
+  if (!list.length) {
+    return `<div class="glass-card rounded-2xl p-8 text-center text-zinc-500 text-xs">Заявок не найдено</div>`;
+  }
+
+  return list.map(b => {
+    const srv = CONFIG.services.find(s => s.id === b.service);
+    const slotObj = CONFIG.slots.find(x => x.id === b.slot);
+
+    return `
+      <div class="glass-card rounded-2xl p-4 space-y-3">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-sm text-white">${esc(b.name || "Гость")}</span>
+              <span class="status-badge ${b.status === 'confirmed' ? 'status-confirmed' : b.status === 'cancelled' ? 'status-cancelled' : 'status-new'}">
+                ${b.status === 'confirmed' ? 'Принята' : b.status === 'cancelled' ? 'Отменена' : 'Новая'}
+              </span>
+            </div>
+            <div class="text-[11px] text-zinc-400 mt-0.5">${b.code} · ${b.date}</div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-black text-blue-400">${money(b.sum)}</div>
+          </div>
+        </div>
+
+        <div class="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-1 text-xs">
+          <div class="flex justify-between text-zinc-400">
+            <span>Локация:</span>
+            <span class="text-zinc-200 font-semibold">${esc(srv?.name || b.service)}</span>
+          </div>
+          <div class="flex justify-between text-zinc-400">
+            <span>Время:</span>
+            <span class="text-blue-300 font-semibold">${slotObj?.time || b.slot} (${slotObj?.label || ''})</span>
+          </div>
+          ${b.addons?.length ? `
+            <div class="pt-1 text-[11px] text-zinc-400 border-t border-white/5">
+              + ${b.addons.map(id => CONFIG.addons.find(a => a.id === id)?.name).filter(Boolean).join(", ")}
+            </div>
+          ` : ''}
+        </div>
+
+        <a href="tel:${esc(b.phone)}" class="w-full py-2.5 rounded-xl bg-blue-600/15 border border-blue-500/30 text-blue-400 font-bold text-xs flex items-center justify-center gap-2 tap-bounce">
+          <span>📞</span> <span>${esc(b.phone || "Позвонить")}</span>
+        </a>
+
+        <div class="flex items-center gap-2 pt-1">
+          ${b.status !== 'confirmed' ? `
+            <button onclick="setBookingStatus('${b.id}', 'confirmed')" class="flex-1 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs tap-bounce">
+              ✓ Принять
+            </button>
+          ` : ''}
+          ${b.status !== 'cancelled' ? `
+            <button onclick="setBookingStatus('${b.id}', 'cancelled')" class="flex-1 py-2 rounded-xl bg-white/5 border border-white/10 text-red-400 font-bold text-xs tap-bounce">
+              Отменить
+            </button>
+          ` : ''}
+          <button onclick="removeBooking('${b.id}')" class="p-2 rounded-xl bg-white/5 text-zinc-500 hover:text-red-400 text-xs tap-bounce">
+            🗑️
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function updateBookingsList() {
+  const container = $("bookings-container");
+  if (!container) return;
+  const bookings = readBookings();
+  const q = state.search.toLowerCase();
+  const filtered = bookings.filter(b => {
+    if (state.filter !== "all" && b.status !== state.filter) return false;
+    if (q) return (b.name?.toLowerCase().includes(q) || b.phone?.includes(q) || b.code?.toLowerCase().includes(q));
+    return true;
+  });
+  container.innerHTML = renderBookingsListOnly(filtered);
+}
+
+function setBookingStatus(id, st) {
+  const list = readBookings();
+  const item = list.find(x => x.id === id);
+  if (item) {
+    item.status = st;
+    writeBookings(list);
+    showToast(`Статус обновлен`, "success");
+    render();
+  }
+}
+
+function removeBooking(id) {
+  if (!confirm("Удалить эту запись?")) return;
+  const list = readBookings().filter(x => x.id !== id);
+  writeBookings(list);
+  showToast("Запись удалена", "success");
+  render();
+}
+
+function renderPricesTab() {
+  return `
+    <div class="space-y-4 fade-in">
+      <div class="glass-card rounded-2xl p-4">
+        <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-1.5">
+          <span>🏠</span> Пространства (базовые цены)
+        </h2>
+        <div class="space-y-3">
+          ${CONFIG.services.map(s => `
+            <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-black/40 border border-white/5">
+              <div class="min-w-0">
+                <div class="text-xs font-bold text-white">${esc(s.name)}</div>
+                <div class="text-[10px] text-zinc-500">ID: ${s.id}</div>
+              </div>
+              <div class="flex items-center gap-1.5 w-32 shrink-0">
+                <input id="price_${s.id}" type="number" step="100" value="${getEffectivePrice(s.id)}" class="field text-xs text-right font-bold py-1.5 px-2">
+                <span class="text-xs text-zinc-400">₽</span>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4">
+        <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-1.5">
+          <span>🌿</span> Дополнительные услуги
+        </h2>
+        <div class="space-y-3">
+          ${CONFIG.addons.map(a => `
+            <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-black/40 border border-white/5">
+              <div class="min-w-0">
+                <div class="text-xs font-bold text-white">${esc(a.name)}</div>
+                <div class="text-[10px] text-zinc-500">${esc(a.desc || '')}</div>
+              </div>
+              <div class="flex items-center gap-1.5 w-32 shrink-0">
+                <input id="price_a_${a.id}" type="number" step="50" value="${getEffectiveAddonPrice(a.id)}" class="field text-xs text-right font-bold py-1.5 px-2">
+                <span class="text-xs text-zinc-400">₽</span>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <button onclick="saveAllPrices()" class="w-full accent-btn text-white rounded-xl py-3.5 font-bold text-xs tap-bounce">
+        Сохранить и применить цены
+      </button>
+    </div>
+  `;
+}
+
+function saveAllPrices() {
+  const p = {};
+  CONFIG.services.forEach(s => {
+    const input = $("price_" + s.id);
+    if (input) p[s.id] = Number(input.value) || s.price;
+  });
+  CONFIG.addons.forEach(a => {
+    const input = $("price_a_" + a.id);
+    if (input) p["a_" + a.id] = Number(input.value) || a.price;
+  });
+
+  writePrices(p);
+  showToast("Цены успешно обновлены на сайте", "success");
+}
+
+function renderSlotsTab(bookings) {
+  const daysList = Array.from({ length: 7 }, (_, i) => {
+    let d = new Date();
+    d.setDate(d.getDate() + i);
+    return d.toISOString().slice(0, 10);
+  });
+
+  const blocked = readBlocked();
+
+  return `
+    <div class="space-y-3 fade-in">
+      <div class="glass-card rounded-2xl p-4">
+        <h2 class="text-sm font-bold text-white mb-1">Сетка окон на 7 дней</h2>
+        <p class="text-xs text-zinc-400 mb-3">Нажмите на свободное время, чтобы закрыть его для гостей</p>
+
+        <div class="space-y-3">
+          ${daysList.map(d => {
+            const isToday = d === today();
+            const dateObj = new Date(d + "T12:00");
+            const dateFmt = dateObj.toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "short" });
+
+            return `
+              <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                <div class="flex justify-between items-center text-xs font-bold text-zinc-300">
+                  <span>${dateFmt}${isToday ? '• Сегодня' : ''}</span>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1.5">
+                  ${CONFIG.slots.map(sl => {
+                    const key = d + "_" + sl.id;
+                    const isBlk = blocked.includes(key);
+                    const isBsy = bookings.some(b => b.date === d && b.slot === sl.id && b.status !== "cancelled");
+
+                    if (isBsy) {
+                      return `
+                        <div class="slot-booked py-2 rounded-lg text-center opacity-85">
+                          <div class="text-[11px] font-bold text-amber-300">${sl.time}</div>
+                          <div class="text-[8px] text-amber-400">Бронь</div>
+                        </div>
+                      `;
+                    }
+
+                    return `
+                      <button onclick="toggleSlotBlock('${key}')" class="${isBlk ? 'slot-blocked' : 'slot-open'} py-2 rounded-lg text-center tap-bounce">
+                        <div class="text-[11px] font-bold ${isBlk ? 'text-red-300' : 'text-white'}">${sl.time}</div>
+                        <div class="text-[8px] ${isBlk ? 'text-red-400' : 'text-zinc-500'}">${isBlk ? 'Закрыт' : sl.label}</div>
+                      </button>
+                    `;
+                  }).join("")}
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleSlotBlock(key) {
+  let b = readBlocked();
+  if (b.includes(key)) {
+    b = b.filter(x => x !== key);
+    showToast("Слот открыт", "success");
+  } else {
+    b.push(key);
+    showToast("Слот заблокирован", "success");
+  }
+  writeBlocked(b);
+  render();
+}
+
+let toastTimer = null;
+function showToast(msg, type = "success") {
+  const root = $("toast-root");
+  if (!root) return;
+  clearTimeout(toastTimer);
+
+  root.innerHTML = `
+    <div class="glass-card max-w-[320px] mx-auto rounded-2xl px-4 py-3 flex items-center gap-2.5 shadow-2xl border ${type === 'error' ? 'border-red-500/40 text-red-300' : 'border-blue-500/40 text-white'}">
+      <span>${type === 'error' ? '⚠️' : '✓'}</span>
+      <span class="text-xs font-bold leading-tight">${esc(msg)}</span>
+    </div>
+  `;
+  toastTimer = setTimeout(() => { root.innerHTML = ""; }, 2200);
+}
+
+// Синхронизация между вкладками
+window.addEventListener("storage", e => {
+  if (["bookings", "prices", "blocked"].includes(e.key)) {
+    render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
